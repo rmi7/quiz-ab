@@ -109,6 +109,8 @@
     })
   }
 
+  // await quizAnswerA.methods.fund().send({ from:web3.currentProvider.selectedAddress, value: web3.utils.toWei('45'), gas: 200000 })
+  // await quizAnswerB.methods.fund().send({ from:web3.currentProvider.selectedAddress, value: web3.utils.toWei('45'), gas: 200000 })
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   while(true) {
     await sleep(2000);

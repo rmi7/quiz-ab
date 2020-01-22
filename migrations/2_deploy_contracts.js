@@ -93,7 +93,6 @@ module.exports = function(deployer, network, accounts) {
     deployer.deploy(Quiz, [...WHITELISTED_ADDRS, ...accounts.slice(1)], { value: web3.utils.toWei('10') });
   }
   else if (network === 'xdai') {
-    const TEST_ADDR = '0x32518C542CcA9A671d688eC88d9e01206b3dCcd5'
     deployer.deploy(Quiz, [...WHITELISTED_ADDRS, TEST_ADDR], { value: web3.utils.toWei('0'), gas: 3000000 });
     deployer.deploy(Quiz, [...WHITELISTED_ADDRS, TEST_ADDR], { value: web3.utils.toWei('0'), gas: 3000000 });
   }
