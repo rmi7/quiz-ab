@@ -4,6 +4,7 @@ contract Quiz {
     
     uint32 constant rewardfactor = 2;
     bool public ended = false;
+    uint public totalAmount = 0;
      
     address owner;
     
@@ -12,14 +13,21 @@ contract Quiz {
     mapping(address => uint256) amount;
     mapping(address => bool) inArray;
     
+    mapping(address => bool ) whitelist;
+
     // Deployer will be the owner
-    constructor() public payable {
+    constructor(address[] memory _whitelist) public payable {
         owner = msg.sender;
+        for (uint i = 0; i < _whitelist.length; i++) {
+            whitelist[_whitelist[i]] = true;
+        }
     }
     
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only Owner");
-        _;
+    modifier onlyWhitelisted { require(whitelist[msg.sender], "only whitelisted"); _; }
+    modifier onlyOwner() { require(msg.sender == owner, "Only Owner"); _; }
+    
+    function addToWhitelist(address _a) public onlyOwner {
+        whitelist[_a] = true;
     }
     
     //Allows the owner to deposit funds into the contract without voting
@@ -34,10 +42,12 @@ contract Quiz {
 
     //Everyone can vote by sending up to one xDai
     //Note - supports multiple contributions per round up to a total of 1 xDai (prevents to send more)
-    receive() payable external{
+    receive() payable external onlyWhitelisted {
         require(!ended, "quiz ended");
+        require(msg.value > 0, "need to send some xDai");
         require(amount[msg.sender] + msg.value <= 1 ether, "max. 1 xDai allowed per round!");
         amount[msg.sender] += msg.value;
+        totalAmount += msg.value;
         
         //Caution, only add the address to the array of voters once, to prevent multiple payout
         if (inArray[msg.sender] == false){
@@ -56,13 +66,15 @@ contract Quiz {
         }
         //delete the array
         delete voters;
+
+        totalAmount = 0;
     }
     
     //Allows the admin to reward the voters if this was the correct answer
     function reward() public onlyOwner{
         require(!ended, "quiz ended");
         for (uint i = 0; i < voters.length; i++){
-            require(voters[i].send(rewardfactor*amount[voters[i]]), "sending failed - insufficent funds? Add funds an try again");
+            voters[i].send(rewardfactor*amount[voters[i]]);
         }
         // Reset everything to be ready for new round
         reset();
