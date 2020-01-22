@@ -2,15 +2,20 @@
   "name": "pwc_quiz",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon",
+    "copy-web3-to-local": "cp node_modules/web3/dist/web3.min.js src/public/web3.min.js",
+    "compile-contracts": "npx truffle compile",
+    "deploy-contracts": "npx truffle migrate --reset",
+    "test-contracts": "npx truffle test --network development"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@openzeppelin/contracts": "^2.4.0",
     "express": "^4.17.1",
+    "nodemon": "^2.0.2",
     "truffle": "^5.1.9"
   }
 }
